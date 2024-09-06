@@ -106,8 +106,13 @@ class CMIDI():
                 self._cMidiPos += 5
 
             elif control.uint == 0x1d: # Pitch bend
-                pitch_wheel = self._cMidiBuf[self._cMidiPos:self._cMidiPos+7]            
-                ret = mido.Message("pitchwheel", channel=self._cNoteChannel, pitch=pitch_wheel.uint)
+                pitch_wheel = self._cMidiBuf[self._cMidiPos:self._cMidiPos+7]  
+                if (pitch_wheel.uint & 64):
+                    pitch_wheel_adj = (pitch_wheel.uint&0x3f)
+                else:
+                    pitch_wheel_adj = (-64+(pitch_wheel.uint&0x3f))
+                pitch_wheel_adj <<= 7
+                ret = mido.Message("pitchwheel", channel=self._cNoteChannel, pitch=pitch_wheel_adj)
                 self._cMidiPos += 7
 
             elif control.uint == 0x1c: # Volume
@@ -149,6 +154,7 @@ class CMIDI():
         pDeltaTime = self._cNoteDeltaTime
         self._cNoteDeltaTime = 0
         
+        print(pDeltaTime * self._timeRes)
         return pDeltaTime * self._timeRes, ret
     
     def play(self):
