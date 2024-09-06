@@ -154,7 +154,6 @@ class CMIDI():
         pDeltaTime = self._cNoteDeltaTime
         self._cNoteDeltaTime = 0
         
-        print(pDeltaTime * self._timeRes)
         return pDeltaTime * self._timeRes, ret
     
     def play(self):
